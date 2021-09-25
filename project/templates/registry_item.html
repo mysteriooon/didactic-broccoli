@@ -1,0 +1,29 @@
+{% for i in data %}
+    <tr>
+        <td>{{ i.fio }}</td>
+        <td>{{ i.snils }}</td>
+        <td>{{ i.income }}</td>
+        {% if i.child_count == None %}
+            <td>Нет детей</td>
+        {% else %}
+            <td>{{ i.child_count }}</td>
+        {% endif %}
+        {% if i.med_disabled == 1 %}
+            <td>ОВЗ</td>
+        {% else %}
+            <td>Нет ограничений</td>
+        {% endif %}
+        {% if i.estate == None %}
+            <td>Квартира</td>
+        {% else %}
+            <td>Нет имущества</td>
+        {% endif %}
+        {% if i.coef >= 1 %}
+            <td>Низкий</td>
+        {% elif i.coef >= 0.75 and i.coef <= 0.99 %}
+            <td>Средний</td>
+        {% else %}
+            <td>Высокий</td>
+        {% endif %}
+    </tr>
+{% endfor %}

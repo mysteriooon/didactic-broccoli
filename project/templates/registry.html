@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="static/main.css">
+</head>
+<body>
+    <header>
+        <div class="header-menu">
+            <ul class="header-menu__list">
+                <li class="header-menu__item"><a href="/">Социальный калькулятор</a></li>
+                <li class="header-menu__item"><a href="/dashboard">Аналитика</a></li>
+                <li class="header-menu__item item-active"><a href="/registry">Реестр</a></li>
+            </ul>
+        </div>
+    </header>
+    <div class="registry-header-wrapper">
+        <div class="registry-header">
+            Возраст
+            <div class="age-container">
+                <input id="input-age-from" maxlength="2" oninput="onAgeFromChange()">
+                -
+                <input id="input-age-to" maxlength="2" oninput="onAgeToChange()">
+            </div>
+            Пол
+            <div class="gender-container">
+                <div id="input-gender-men" onclick="setGender('m')">М</div>
+                <div id="input-gender-women" onclick="setGender('f')">Ж</div>
+                <div id="input-gender-all" onclick="setGender('*')" class="selected">*</div>
+            </div>
+            МО
+            <div class="municipality">
+              <div onclick="toggleMunicipalityDropdown()" class="dropbtn">
+                  <svg width="16" height="9" viewBox="0 0 28 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 2L14 11L26 2" stroke="black" stroke-width="3" stroke-linecap="round"
+                            stroke-linejoin="round"/>
+                  </svg>
+                  <span>
+                    Все
+                  </span>
+              </div>
+              <div id="municipality-dropdown" class="dropdown-content">
+                  <div data-id="-1">Все</div>
+                  <div data-id="1">Алнашский</div>
+                  <div data-id="2">Балезинский</div>
+                  <div data-id="3">Вавожский</div>
+                  <div data-id="4">Воткинский</div>
+                  <div data-id="5">Глазовский</div>
+                  <div data-id="6">Граховский</div>
+                  <div data-id="7">Дебесский</div>
+                  <div data-id="8">Завьяловский</div>
+                  <div data-id="9">Игринский</div>
+                  <div data-id="10">Индустриальный</div>
+                  <div data-id="11">Камбарский</div>
+                  <div data-id="12">Каракулинский</div>
+                  <div data-id="13">Кезский</div>
+                  <div data-id="14">Кизнерский</div>
+                  <div data-id="15">Киясовский</div>
+                  <div data-id="16">Красногорский</div>
+                  <div data-id="17">Ленинский</div>
+                  <div data-id="18">Малопургинский</div>
+                  <div data-id="19">Можгинский</div>
+                  <div data-id="20">Октябрьский</div>
+                  <div data-id="21">Первомайский</div>
+                  <div data-id="22">Селтинский</div>
+                  <div data-id="23">Сюмсинский</div>
+                  <div data-id="24">Увинский</div>
+                  <div data-id="25">Устиновский</div>
+                  <div data-id="26">Шарканский</div>
+                  <div data-id="27">Юкаменский</div>
+                  <div data-id="28">Як-Бодьинский</div>
+                  <div data-id="29">Ярский</div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="registry-table">
+        <div class="loader" id="registry-table-loader">
+            <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+        </div>
+        <div class="nodata" id="registry-table-nodata">
+            <div>
+                Нет пользователей, соответствующих выбранным критериям
+            </div>
+        </div>
+        <table id="datatable" >
+            <thead>
+                <tr>
+                    <td>ФИО</td>
+                    <td>СНИЛС</td>
+                    <td>Доход</td>
+                    <td>Детей</td>
+                    <td>Здоровье</td>
+                    <td>Имущество</td>
+                    <td>Риск</td>
+                </tr>
+            </thead>
+            <tbody id="datatable-content">
+                <tr>
+                    <td>Поддубный Артем Николаевич</td>
+                    <td>205-011-111 24</td>
+                    <td>10 000</td>
+                    <td>1</td>
+                    <td>Без ограничений</td>
+                    <td>Квартира</td>
+                    <td>Высокий</td>
+                </tr>
+                <tr>
+                    <td>Поддубный Артем Николаевич</td>
+                    <td>205-011-111 24</td>
+                    <td>10 000</td>
+                    <td>1</td>
+                    <td>Без ограничений</td>
+                    <td>Квартира</td>
+                    <td>Высокий</td>
+                </tr>
+                <tr>
+                    <td>Поддубный Артем Николаевич</td>
+                    <td>205-011-111 24</td>
+                    <td>10 000</td>
+                    <td>1</td>
+                    <td>Без ограничений</td>
+                    <td>Квартира</td>
+                    <td>Высокий</td>
+                </tr>
+                <tr>
+                    <td>Поддубный Артем Николаевич</td>
+                    <td>205-011-111 24</td>
+                    <td>10 000</td>
+                    <td>1</td>
+                    <td>Без ограничений</td>
+                    <td>Квартира</td>
+                    <td>Высокий</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let ageFrom = undefined;
+        let ageTo = undefined;
+        let gender = undefined;
+        let municipality = undefined;
+
+        function toggleMunicipalityDropdown() {
+            document.getElementById("municipality-dropdown").classList.toggle("show");
+        }
+
+        document.querySelectorAll("#municipality-dropdown > div").forEach((v) => {
+            v.addEventListener('click', () => {
+                toggleMunicipalityDropdown();
+                if (v.dataset.id === '-1') {
+                    municipality = undefined;
+                } else {
+                    municipality = v.dataset.id;
+                }
+                document.querySelector(".municipality > .dropbtn > span").innerHTML = v.innerHTML;
+                queryData();
+            })
+        });
+
+        function onAgeFromChange() {
+            try {
+                ageFrom = parseInt(document.getElementById("input-age-from").value);
+                if (isNaN(ageFrom)) {
+                    ageFrom = undefined;
+                }
+            } catch (e) {
+                ageFrom = undefined;
+            }
+            queryData();
+        }
+
+        function onAgeToChange() {
+            try {
+                ageTo = parseInt(document.getElementById("input-age-to").value);
+                if (isNaN(ageTo)) {
+                    ageTo = undefined;
+                }
+            } catch (e) {
+                ageTo = undefined;
+            }
+            queryData();
+        }
+
+        function setGender(str) {
+            if (str === '*') {
+                gender = undefined;
+                document.querySelector(".gender-container .selected").classList.remove("selected");
+                document.getElementById("input-gender-all").classList.add("selected");
+            } else if (str === 'm') {
+                gender = 1;
+                document.querySelector(".gender-container .selected").classList.remove("selected");
+                document.getElementById("input-gender-men").classList.add("selected");
+            } else if (str === 'f') {
+                gender = 0;
+                document.querySelector(".gender-container .selected").classList.remove("selected");
+                document.getElementById("input-gender-women").classList.add("selected");
+            }
+            queryData();
+        }
+
+        function queryData() {
+            document.getElementById("registry-table-loader").classList.add("show")
+            var req = "/registry_item?";
+            if (ageFrom !== undefined) {
+                req += "age_from=" + ageFrom + "&";
+            }
+            if (ageTo !== undefined) {
+                req += "age_to=" + ageTo + "&";
+            }
+            if (gender !== undefined) {
+                req += "gender=" + gender + "&";
+            }
+            if (municipality !== undefined) {
+                req += "municipality=" + municipality + "&";
+            }
+            fetch(req).then((v) => v.text()).then(value => {
+                document.getElementById("datatable-content").innerHTML = value;
+                document.getElementById("registry-table-loader").classList.remove("show");
+                if (value.trim() === '') {
+                    document.getElementById("registry-table-nodata").classList.add("show");
+                } else {
+                    document.getElementById("registry-table-nodata").classList.remove("show");
+                }
+            })
+        }
+
+        queryData()
+    </script>
+</body>
+</html>

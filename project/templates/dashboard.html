@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBhe0P-xEDYb7wPyP0pHHv69_0vQ0MMEA" async
+            defer></script>
+    <link rel="stylesheet" type="text/css" href="static/main.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+</head>
+<body>
+<header>
+    <div class="header-menu">
+        <ul class="header-menu__list">
+            <li class="header-menu__item"><a href="/">Социальный калькулятор</a></li>
+            <li class="header-menu__item item-active"><a href="/dashboard">Аналитика</a></li>
+            <li class="header-menu__item"><a href="/registry">Реестр</a></li>
+        </ul>
+    </div>
+</header>
+<div class="grid">
+    <div class="row justify-space-between chart-row">
+        <div id="map">
+        </div>
+        <div class="col justify-space-between">
+            <canvas id="male-map" class="chart"></canvas>
+            <canvas id="female-map" class="chart"></canvas>
+        </div>
+    </div>
+    <div class="row justify-space-between chart-row">
+        <div class="big-chart">
+            <canvas id="gender-chart"></canvas>
+        </div>
+        <div class="total">
+            <h1>{{ total }}</h1>
+            <h3>малоимущих<br/> граждан</h3>
+        </div>
+    </div>
+</div>
+<script>
+    var men_stats = [
+        {% for men_stat in men_stats %}
+            {{ men_stat.inc }} ,
+        {% endfor %}
+    ];
+    var women_stats = [
+        {% for stat in women_stats %}
+            {{ stat.inc }} ,
+        {% endfor %}
+    ];
+    var geo_stats = [
+        {% for stat in geo_stats %}
+            { count: {{ stat.count }}, name: "{{ stat.name }}", lat: {{ stat.lat }}, lon: {{ stat.lon }} } ,
+        {% endfor %}
+    ]
+    var gender_stats = [
+        {% for stat in gender_stats %}
+            { gender: {{ stat.gender }}, count: {{ stat.count }} } ,
+        {% endfor %}
+    ]
+    var map = L.map('map', {minZoom: 7, maxZoom: 7}).setView([57.2732309, 52.8749233], 7);
+    map.dragging.disable();
+
+    function colorFor(stats, id) {
+        var a = stats[id];
+        if (a >= 20_000) {
+            return "#FF8F51";
+        } else if (a >= 30_000) {
+            return "#FF5B51";
+        } else {
+            return "#FFD951";
+        }
+    }
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    }).addTo(map);
+    {#var roads = L.gridLayer#}
+    {#    .googleMutant({#}
+    {#        type: "roadmap", // valid values are 'roadmap', 'satellite', 'terrain' and 'hybrid'#}
+    {#    })#}
+    {#	.addTo(map);#}
+
+    const geo_max = geo_stats.map((v) => v.count).reduce((a, b) => a > b ? a : b);
+    geo_stats.forEach(value => {
+        let marker = L.marker([value.lat, value.lon]);
+        let percent = value.count / geo_max * 12;
+        marker.options.icon.options.iconSize = [28 + percent, 38 + percent];
+        marker.addTo(map)
+            .bindPopup(value.name + '<br> Кол-во бедных: ' + value.count)
+            .openPopup();
+    })
+
+    var ctx = document.getElementById('male-map').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['20', '30', '40', '50', '60', '70+'],
+            datasets: [{
+                label: 'RUB',
+                data: men_stats,
+                backgroundColor: [
+                    colorFor(men_stats, 0),
+                    colorFor(men_stats, 1),
+                    colorFor(men_stats, 2),
+                    colorFor(men_stats, 3),
+                    colorFor(men_stats, 4),
+                    colorFor(men_stats, 5)
+                ],
+                borderColor: [
+                    colorFor(men_stats, 0),
+                    colorFor(men_stats, 1),
+                    colorFor(men_stats, 2),
+                    colorFor(men_stats, 3),
+                    colorFor(men_stats, 4),
+                    colorFor(men_stats, 5)
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    color: 'black',
+                    font: {
+                        size: 24,
+                        weight: 'bold',
+                        family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                    },
+                    text: 'Уровень бедности среди мужчин'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderColor: 'transparent',
+                        display: false
+                    },
+                    ticks: {
+                        color: 'black',
+                        font: {
+                            size: 16,
+                            weight: '500',
+                            family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        borderColor: 'transparent',
+                        display: false
+                    },
+                    ticks: {
+                        color: 'black',
+                        font: {
+                            size: 16,
+                            weight: '500',
+                            family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                        }
+                    }
+                }
+            }
+        }
+    });
+    var ctx = document.getElementById('female-map').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['20', '30', '40', '50', '60', '70+'],
+            datasets: [{
+                label: 'RUB',
+                data: women_stats,
+                backgroundColor: [
+                    colorFor(women_stats, 0),
+                    colorFor(women_stats, 1),
+                    colorFor(women_stats, 2),
+                    colorFor(women_stats, 3),
+                    colorFor(women_stats, 4),
+                    colorFor(women_stats, 5)
+                ],
+                borderColor: [
+                    colorFor(women_stats, 0),
+                    colorFor(women_stats, 1),
+                    colorFor(women_stats, 2),
+                    colorFor(women_stats, 3),
+                    colorFor(women_stats, 4),
+                    colorFor(women_stats, 5)
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                title: {
+                    display: true,
+                    color: 'black',
+                    font: {
+                        size: 24,
+                        weight: 'bold',
+                        family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                    },
+                    text: 'Уровень бедности среди женщин'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderColor: 'transparent',
+                        display: false
+                    },
+                    ticks: {
+                        color: 'black',
+                        font: {
+                            size: 16,
+                            weight: '500',
+                            family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        borderColor: 'transparent',
+                        display: false
+                    },
+                    ticks: {
+                        color: 'black',
+                        font: {
+                            size: 16,
+                            weight: '500',
+                            family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                        }
+                    }
+                }
+            }
+        }
+    });
+    var ctx = document.getElementById('gender-chart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Женщины', 'Мужчины'],
+            datasets: [{
+                label: 'чел.',
+                data: [
+                    gender_stats.find((v) => v.gender === 0).count,
+                    gender_stats.find((v) => v.gender === 1).count
+                ],
+                backgroundColor: [
+                    "#ABFF78",
+                    "#FF8B8B",
+                ],
+                borderColor: [
+                    "#ABFF78",
+                    "#FF8B8B",
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            offset: 16,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    color: 'black',
+                    font: {
+                        size: 24,
+                        weight: 'bold',
+                        family: "'Roboto', 'Segoe UI', Arial, sans-serif",
+                    },
+                    text: 'Распределение бедности между полами'
+                }
+            },
+        }
+    });
+</script>
+</body>
+</html>

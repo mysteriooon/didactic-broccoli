@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="static/main.css">
+</head>
+<body>
+    <header>
+        <div class="header-menu">
+            <ul class="header-menu__list">
+                <li class="header-menu__item item-active"><a href="/">Социальный калькулятор</a></li>
+                <li class="header-menu__item"><a href="/dashboard">Аналитика</a></li>
+                <li class="header-menu__item"><a href="/registry">Реестр</a></li>
+            </ul>
+        </div>
+
+    </header>
+    <div class="wrapper">
+        <!--<h1>Социальный калькулятор</h1>-->
+        {% if lgotas|length == 0 %}
+            <p class="text-desc">Мы не нашли доступных льгот</p>
+        {% else %}
+            <p class="text-desc">Мы нашли следующие доступные льготы:</p>
+        {% endif %}
+        {% for lgota in lgotas %}
+            <div class="content-card benefit-item">
+                <div class="benefit-item-left">
+                    <p class="content-card__header">{{ lgota.name }}</p>
+                    <p class="content-card__desc">{{ lgota.desc }}</p>
+                </div>
+                <button type="submit" class="btn benefit-item-right">Подать заявку</button>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
