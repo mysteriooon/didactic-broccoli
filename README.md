@@ -12,7 +12,6 @@
  </ul>
 <h4>Основной стек технологий:</h4>
 <ul>
-  <li>LAMP/LEMP/FAMP/FEMP.</li>
 	<li>HTML, CSS, JavaScript.</li>
 	<li>Python, Flask.</li>
 	<li>PostgreSQL.</li>
